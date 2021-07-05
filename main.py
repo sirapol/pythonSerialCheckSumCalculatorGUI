@@ -55,17 +55,18 @@ def createWidget(nom):
     # lstText = []
     # checkSum=StringVar()
     # checkSumWithData = StringVar()
-    Label(root,text="Address").grid(row=0,column=0)
-    Label(root,text="Hex").grid(row=0,column=1)
-    for x in range(0, nom):
+    Label(root,text="Address").grid(row=1,column=0)
+    Label(root,text="Hex").grid(row=1,column=1)
+    for x in range(0, nom-1):
+       
         Label(root, text=f'0x{"{:02x}".format(x)}',
-              width=5).grid(row=x+1, column=0)
+              width=5).grid(row=x+2, column=0)
         lstText.append(StringVar())
         lstEntry.append(
             Entry(root, text="0x00", textvariable=lstText[x], width=6, justify=CENTER))
         lstEntry[x].insert(END, "0x00")
         lstEntry[x].bind('<Return>', (lambda _: textChange()))
-        lstEntry[x].grid(row=x+1, column=1)
+        lstEntry[x].grid(row=x+2, column=1)
 
     e1 = Entry(root, textvariable=checkSumWithData, width=30, justify=CENTER)
     e2 = Entry(root, textvariable=checkSum, justify=CENTER)
@@ -76,21 +77,26 @@ def createWidget(nom):
 
     Button(root, text="Copy", command=onClickCopy,
            justify=CENTER).grid(row=nom+3, columnspan=2)
-   #  Button(root, text="Reconfig", command=init,
-         #   justify=CENTER).grid(row=nom+4, columnspan=2)
+    Button(root, text="Close", command=clear,
+           justify=CENTER).grid(row=nom+4, columnspan=2)
+
 
 def selectArray(event):
     print(variable.get())
-    onClickTest()
+   #  onClickTest()
     createWidget(int(variable.get()))
+
+def init():
+   Label(root, text="Data sizes : ").grid(row=0, column=0)
+   OptionMenu(root, variable, *lst, command=selectArray).grid(row=0, column=1)
+
+def clear():
+   exit()
+
 
 # main
 variable = StringVar(root)
 variable.set(lst[0])  # default value
-Label(root, text="Data sizes : ").grid(row=0, column=0)
-OptionMenu(root, variable, *lst, command=selectArray).grid(row=0, column=1)
+init()
 
-
-
-# create input
 root.mainloop()
