@@ -1,82 +1,64 @@
 from tkinter import *
-#Create an instance of Tkinter frame
-win= Tk()
-win.geometry("500x500")             # fix windows size
-win.resizable(False,False)
 
-def callback(var):
-   input = var1.get()
-   print(input)
+root =Tk()
 
-def callbackDropdown(event):
-   print("user chenge : ",variable.get())
+# add widget
+
+root.title("Serial Checksum Calculator")
+root.option_add("*Font","consolas 12")
+root.geometry("600x600")
+root.resizable(False,False)
 
 
 # define maxBytes
-lst =[]
 maxBytes = 10
-for x in range(3,maxBytes):
-   lst.append(x)
+# lst = [StringVar()]* (maxBytes+1)
+lstEntry=[]
+lstText = []
+checkSum=StringVar()
+checkSumWithData = StringVar()
 
-# create 
-variable = StringVar(win)
-variable.set(0) # default value
-w = OptionMenu(win, variable, *lst,command = callbackDropdown).pack()
-# var1 = StringVar()
-# var1.trace("w", lambda name, index,mode, var=var1: callback(var))
-# var2 = StringVar()
-# var2.trace("w", lambda name, index,mode, var=var2: callback(var))
+def onClickCopy():
+   root.clipboard_clear()
+   root.clipboard_append(checkSumWithData.get())
 
-# #Create an Entry widget
-# e1 = Entry(win, textvariable=var1)
-# e1.pack()
-# e2 = Entry(win, textvariable=var2)
-# e2.pack()
+def textChange():
+   checkSumI=0
+   checkSumD=""
+   for a in lstText:
+      checkSumI = checkSumI ^ int(a.get(),base=16)
+      strbuf = "{:02x}".format(int(a.get(),base=16))
+      checkSumD = checkSumD+strbuf
+   checkSumD = checkSumD + str(hex(checkSumI)).lstrip("0x")
+   checkSumD = "\\x"+checkSumD
+   checkSumWithData.set(checkSumD)
+   checkSum.set("0x{:02x}".format(checkSumI))
+   print(checkSum.get())
+   print("checksum : ",checkSum.get())
 
-# print("user select :",variable.get())
-# win.mainloop()
+for x in range(0,maxBytes):
+   Label(root,text=f'0x{"{:02x}".format(x)}').pack(side=TOP)
+   lstText.append(StringVar())
+   lstEntry.append(Entry(root,text="0x00",textvariable=lstText[x],width=4))  
+   lstEntry[x].insert(END,"0x00")
+   lstEntry[x].bind('<Return>',(lambda _:textChange()))
+   lstEntry[x].pack(side=TOP)
+   # Entry(root,textvariable=lst[x],width=4).bind('<Return>',(lambda _:callback(e))).pack()
+   # print(lst[x])
 
+# Label(root,text= "Data sizes : ").pack(side=LEFT)
+# variable = StringVar(root)
+# variable.set(0) # default value
+# OptionMenu(root, variable, *lst).pack(side=LEFT)
 
-# from tkinter import *
-# import tkinter
+e1 = Entry(root,textvariable=checkSumWithData,width=30)
+e2 = Entry(root,textvariable=checkSum)
+e1.config(state=DISABLED)
+e2.config(state=DISABLED)
+e1.pack()
+e2.pack()
 
-# root = Tk()
-# root.geometry("500x500")
-# root.resizable(False,False)
-# frame=Frame(root)
-# Grid.rowconfigure(root, 0, weight=1)
-# Grid.columnconfigure(root, 0, weight=1)
-# frame.grid(row=0, column=0, sticky=N+S+E+W)
-# grid=Frame(frame)
-# grid.grid(sticky=N+S+E+W, column=0, row=7, columnspan=2)
-# Grid.rowconfigure(frame, 7, weight=1)
-# Grid.columnconfigure(frame, 0, weight=1)
+Button(root,text="Copy",command=onClickCopy).pack(side=BOTTOM)
 
-# active="red"
-# default_color="white"
+root.mainloop()
 
-# def main(height=5,width=5):
-#   for x in range(width):
-#     for y in range(height):
-#       btn = tkinter.Button(frame, bg=default_color)
-#       btn.grid(column=x, row=y, sticky=N+S+E+W)
-#       btn["command"] = lambda btn=btn: click(btn)
-
-#   for x in range(width):
-#     Grid.columnconfigure(frame, x, weight=1)
-
-#   for y in range(height):
-#     Grid.rowconfigure(frame, y, weight=1)
-
-#    # tkinter.Text("heelo")
-
-#   return frame
-
-# def click(button):
-#   if(button["bg"] == active):
-#     button["bg"] = default_color
-#   else:
-#     button["bg"] = active
-
-# w= main(10,10)
-# tkinter.mainloop()
