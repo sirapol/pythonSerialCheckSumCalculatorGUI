@@ -1,64 +1,96 @@
 from tkinter import *
 
-root =Tk()
+root = Tk()
 
 # add widget
 
 root.title("Serial Checksum Calculator")
-root.option_add("*Font","consolas 12")
-root.geometry("600x600")
-root.resizable(False,False)
+root.option_add("*Font", "consolas 12")
+# root.geometry("600x600")
+# root.resizable(False, False)
 
+# define nom
+# lst = [StringVar()]* (10+1)
+lst = []
+for xxx in range(3, 10):
+    lst.append(xxx)
 
-# define maxBytes
-maxBytes = 10
-# lst = [StringVar()]* (maxBytes+1)
-lstEntry=[]
+print(lst)
+
+lstEntry = []
 lstText = []
-checkSum=StringVar()
+checkSum = StringVar()
 checkSumWithData = StringVar()
 
+
+# click for test
+def onClickTest():
+    for widget in root.winfo_children():
+        widget.destroy()
+
+
+# click for copy
 def onClickCopy():
-   root.clipboard_clear()
-   root.clipboard_append(checkSumWithData.get())
+    root.clipboard_clear()
+    root.clipboard_append(checkSumWithData.get())
+
 
 def textChange():
-   checkSumI=0
-   checkSumD=""
-   for a in lstText:
-      checkSumI = checkSumI ^ int(a.get(),base=16)
-      strbuf = "{:02x}".format(int(a.get(),base=16))
-      checkSumD = checkSumD+strbuf
-   checkSumD = checkSumD + str(hex(checkSumI)).lstrip("0x")
-   checkSumD = "\\x"+checkSumD
-   checkSumWithData.set(checkSumD)
-   checkSum.set("0x{:02x}".format(checkSumI))
-   print(checkSum.get())
-   print("checksum : ",checkSum.get())
+    checkSumI = 0
+    checkSumD = ""
+    for a in lstText:
+        checkSumI = checkSumI ^ int(a.get(), base=16)
+        strbuf = "{:02x}".format(int(a.get(), base=16))
+        checkSumD = checkSumD+strbuf
+    checkSumD = checkSumD + str(hex(checkSumI)).lstrip("0x")
+    checkSumD = "\\x"+checkSumD
+    checkSumWithData.set(checkSumD)
+    checkSum.set("0x{:02x}".format(checkSumI))
+    print(checkSum.get())
+    print("checksum : ", checkSum.get())
 
-for x in range(0,maxBytes):
-   Label(root,text=f'0x{"{:02x}".format(x)}').pack(side=TOP)
-   lstText.append(StringVar())
-   lstEntry.append(Entry(root,text="0x00",textvariable=lstText[x],width=4))  
-   lstEntry[x].insert(END,"0x00")
-   lstEntry[x].bind('<Return>',(lambda _:textChange()))
-   lstEntry[x].pack(side=TOP)
-   # Entry(root,textvariable=lst[x],width=4).bind('<Return>',(lambda _:callback(e))).pack()
-   # print(lst[x])
 
-# Label(root,text= "Data sizes : ").pack(side=LEFT)
-# variable = StringVar(root)
-# variable.set(0) # default value
-# OptionMenu(root, variable, *lst).pack(side=LEFT)
+def createWidget(nom):
+    # lstEntry=[]
+    # lstText = []
+    # checkSum=StringVar()
+    # checkSumWithData = StringVar()
+    Label(root,text="Address").grid(row=0,column=0)
+    Label(root,text="Hex").grid(row=0,column=1)
+    for x in range(0, nom):
+        Label(root, text=f'0x{"{:02x}".format(x)}',
+              width=5).grid(row=x+1, column=0)
+        lstText.append(StringVar())
+        lstEntry.append(
+            Entry(root, text="0x00", textvariable=lstText[x], width=6, justify=CENTER))
+        lstEntry[x].insert(END, "0x00")
+        lstEntry[x].bind('<Return>', (lambda _: textChange()))
+        lstEntry[x].grid(row=x+1, column=1)
 
-e1 = Entry(root,textvariable=checkSumWithData,width=30)
-e2 = Entry(root,textvariable=checkSum)
-e1.config(state=DISABLED)
-e2.config(state=DISABLED)
-e1.pack()
-e2.pack()
+    e1 = Entry(root, textvariable=checkSumWithData, width=30, justify=CENTER)
+    e2 = Entry(root, textvariable=checkSum, justify=CENTER)
+    e1.config(state=DISABLED)
+    e2.config(state=DISABLED)
+    e1.grid(row=nom+1, columnspan=2)
+    e2.grid(row=nom+2, columnspan=2)
 
-Button(root,text="Copy",command=onClickCopy).pack(side=BOTTOM)
+    Button(root, text="Copy", command=onClickCopy,
+           justify=CENTER).grid(row=nom+3, columnspan=2)
+   #  Button(root, text="Reconfig", command=init,
+         #   justify=CENTER).grid(row=nom+4, columnspan=2)
 
+def selectArray(event):
+    print(variable.get())
+    onClickTest()
+    createWidget(int(variable.get()))
+
+# main
+variable = StringVar(root)
+variable.set(lst[0])  # default value
+Label(root, text="Data sizes : ").grid(row=0, column=0)
+OptionMenu(root, variable, *lst, command=selectArray).grid(row=0, column=1)
+
+
+
+# create input
 root.mainloop()
-
